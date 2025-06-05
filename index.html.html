@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Password Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background: linear-gradient(to right, #0f001a, #220033);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #1e0033;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px #8800ff88;
+      width: 90%;
+      max-width: 450px;
+      text-align: center;
+      animation: popIn 1s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    input[type="number"] {
+      padding: 6px;
+      font-size: 16px;
+      width: 80px;
+      border-radius: 6px;
+      border: none;
+      text-align: center;
+    }
+
+    .checkboxes label {
+      display: block;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    button {
+      background: linear-gradient(to right, #9933ff, #cc33ff);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #cc33ff88;
+    }
+
+    #password {
+      margin-top: 20px;
+      font-size: 16px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      text-align: center;
+      background: #fff;
+      color: #333;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    #strength {
+      font-weight: bold;
+    }
+
+    #copied {
+      margin-top: 10px;
+      color: lime;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Password Generator</h1>
+
+    <div class="input-group">
+      <label>Password Length:</label>
+      <input type="number" id="length" min="4" max="64" value="12">
+    </div>
+
+    <div class="checkboxes">
+      <label><input type="checkbox" id="uppercase" checked> Uppercase</label>
+      <label><input type="checkbox" id="lowercase" checked> Lowercase</label>
+      <label><input type="checkbox" id="numbers" checked> Numbers</label>
+      <label><input type="checkbox" id="symbols" checked> Symbols</label>
+    </div>
+
+    <button id="generate">✨ Generate Password</button>
+
+    <input type="text" id="password" readonly placeholder="Your password will appear here">
+    <div class="actions">
+      <span id="strength">Strength: </span>
+      <button id="copy">📋 Copy</button>
+    </div>
+
+    <p id="copied" class="hidden">✔️ Copied to clipboard!</p>
+  </div>
+
+  <script>
+    const lengthInput = document.getElementById("length");
+    const upper = document.getElementById("uppercase");
+    const lower = document.getElementById("lowercase");
+    const numbers = document.getElementById("numbers");
+    const symbols = document.getElementById("symbols");
+    const generateBtn = document.getElementById("generate");
+    const passwordField = document.getElementById("password");
+    const strengthDisplay = document.getElementById("strength");
+    const copyBtn = document.getElementById("copy");
+    const copiedMessage = document.getElementById("copied");
+
+    function generatePassword() {
+      const length = +lengthInput.value;
+      let chars = "";
+      if (upper.checked) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      if (lower.checked) chars += "abcdefghijklmnopqrstuvwxyz";
+      if (numbers.checked) chars += "0123456789";
+      if (symbols.checked) chars += "!@#$%^&*()_+-=[]{}|;:,.<>?/";
+
+      if (chars === "") {
+        passwordField.value = "Choose at least one option!";
+        return;
+      }
+
+      let pwd = "";
+      for (let i = 0; i < length; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      passwordField.value = pwd;
+      strengthDisplay.textContent = "Strength: " + getStrength(pwd);
+    }
+
+    function getStrength(pwd) {
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[a-z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+      const levels = ["Very Weak", "Weak", "Medium", "Strong", "Very Strong"];
+      return levels[Math.min(score, 4)];
+    }
+
+    function copyToClipboard() {
+      const pwd = passwordField.value;
+      if (!pwd || pwd === "Choose at least one option!") return;
+
+      navigator.clipboard.writeText(pwd).then(() => {
+        copiedMessage.classList.remove("hidden");
+        setTimeout(() => {
+          copiedMessage.classList.add("hidden");
+        }, 1500);
+      });
+    }
+
+    generateBtn.addEventListener("click", generatePassword);
+    copyBtn.addEventListener("click", copyToClipboard);
+  </script>
+</body>
+</html>
