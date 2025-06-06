@@ -20,7 +20,7 @@ A beautiful and secure password generator made using HTML, CSS, and JavaScript. 
 
 Once uploaded, your project will be viewable on:
 
-https://harshavardhan131005.github.io/password-generator/
+https://harshavardhan131005.github.io/password_generator/
 
 ## 📁 How to Use
 
